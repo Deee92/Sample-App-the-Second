@@ -11,11 +11,18 @@ class User < ActiveRecord::Base
             format: { with: VALID_EMAIL_REGEX },
             uniqueness: { case_sensitive: false }
 
-  # saves a securely hashed password_digest to db
-  # validates for presence and equality of virtual attributes
+  # Saves a securely hashed password_digest to db
+  # Validates for presence and equality of virtual attributes
   #   password and password_confirmation
   # authenticate method to return user when password correct
   has_secure_password
   validates :password,
             length: { minimum: 6 }
+
+  # Returns the hash digest of the given string
+  def User.digest(string)
+    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
+                                                  BCrypt::Engine.cost
+    BCrypt::Password.create(string, cost: cost)
+  end
 end
